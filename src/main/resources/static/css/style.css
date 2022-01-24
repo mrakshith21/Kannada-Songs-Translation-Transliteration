@@ -1,0 +1,95 @@
+body{
+    height: 100vh;
+    width: 100%;
+    overflow: auto;
+}
+
+.center{
+    text-align: center;
+}
+
+.input{
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+}
+
+#song-name{
+    padding: 5px;
+}
+
+#target{
+    padding: 5px;
+}
+.video-lyrics{
+    margin-top: 20px;
+}
+.song-details{
+    margin: 10px;
+}
+.text-area-title{
+    background-color: #704e43;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+
+.start-button{
+    font-size: 15px;
+}
+textarea{
+    margin-top: 0;
+    padding: 5px;
+}
+textarea:hover, textarea:focus, textarea:active{
+    border: 1px solid grey;
+    outline: none;
+}
+.text{
+    height: 400PX;
+    width: 100%;
+    margin-bottom: 5px;
+    overflow: auto;
+}
+.detail{
+    margin: 5px 0px;
+}
+.options{
+    border-radius: 3px;
+    border: 1px solid black;
+    width: 65%;
+}
+
+.iframe-default{
+    color: gray;
+    padding: 10%;
+}
+
+#video-frame{
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    text-align: center;
+}
+
+.smaller-font{
+    font-size: 15px !important;
+}
+
+.banner{
+    width: 100%;
+}
+
+.container-fluid{
+    width: 100%;
+    padding: 0px;
+}
+
+.content{
+    padding: 20px;
+}
+
+hr{
+    background-color: black !important;
+}

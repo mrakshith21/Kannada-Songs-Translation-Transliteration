@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Song Video Translation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
+    <link href="css/style.css" rel="stylesheet">
+
+    <script>
+
+        let songList;
+        let currentSong;
+
+        function startButtonUpdate(){
+            if(
+                document.getElementById("song-name") !== undefined &&
+                document.getElementById("target") !== undefined
+            ){
+                document.getElementById("start-button").disabled = false;
+            }
+        }
+        function getAllSongs(){
+            fetch("/songVideoTranslation/songs")
+            .then(response => response.json())
+            .then(data => {
+                songList = data.songList;
+
+                let dataList = document.getElementById("songs");
+                let maxWidth = 0;
+                songList.forEach(song => {
+                    dataList.innerHTML += '<option value="' + song + '">';
+                    maxWidth = (song.length > maxWidth) ? song.length : maxWidth;
+                });
+                console.log(maxWidth);
+                document.getElementById("song-name").style.width = (maxWidth + 1) * 12 + 'px;';
+            }, function(err){
+                console.log(err);
+            });
+
+        }
+
+        function afterSongSelect() {
+            let songNameElement = document.getElementById("song-name");
+            //console.log(songNameElement.value);
+            if(songNameElement.value.length === 0){
+                alert("Please select a song in the 'Song' field");
+            }
+            else if(songNameElement.value !== currentSong){
+                document.getElementById("lyrics").innerHTML = 'Loading...';
+                document.getElementById("translation").innerHTML = 'Loading...';
+                document.getElementById("transliteration").innerHTML = 'Loading...';
+                getVideo();
+                getSong();
+                getTranslation();
+                getTransliteration();
+                document.getElementById('video-lyrics').hidden = false;
+
+                // await getSong();
+                // fetch("/songVideoTranslation/song/" + songNameElement.value)
+                //     .then(function(response){
+                //         if(response.ok){
+                //             return response.json().then(data => {
+                //                 getVideo();
+                //                 document.getElementById("translation").innerHTML = 'Loading...';
+                //                 document.getElementById("transliteration").innerHTML = 'Loading...';
+                //                 currentSong = songNameElement.value;
+                //                 console.log("lyrics fetched successfully");
+                //                 document.getElementById("lyrics").innerHTML = data.lyrics;
+                //                 translate();
+                //                 transliterate();
+                //             });
+                //         }
+                //         else{
+                //             alert("Error! The song named " + songNameElement.value + " is not recognized. Please select a song in the options given.");
+                //
+                //         }
+                //     }).catch(error => {
+                //         alert("Something went wrong");
+                //     })
+            }
+
+        }
+
+        function getSong(){
+            let songNameElement = document.getElementById("song-name");
+            fetch("/songVideoTranslation/song/" + songNameElement.value)
+                .then(response => response.json())
+                .then(function(data){
+                    document.getElementById("lyrics").innerHTML = data.lyrics;
+                }, function(err){
+                    console.log("Error fetching the lyrics of the song " + songNameElement.value);
+
+                });
+        }
+
+        function getTranslation(){
+            let songNameElement = document.getElementById("song-name");
+            fetch("/songVideoTranslation/translation/" + songNameElement.value + "?language=" + document.getElementById("target").value)
+                .then(response => response.text())
+                .then(function(data){
+                    document.getElementById("translation").innerHTML = data;
+                }, function(err){
+                    console.log("Error fetching the translation of the song " + songNameElement.value);
+                });
+        }
+
+        function getTransliteration(){
+            let songNameElement = document.getElementById("song-name");
+            fetch("/songVideoTranslation/transliteration/" + songNameElement.value + "?language=" + document.getElementById("target").value)
+                .then(response => response.text())
+                .then(function(data){
+                    document.getElementById("transliteration").innerHTML = data;
+                }, function(err){
+                    console.log("Error fetching the transliteration of the song " + songNameElement.value);
+
+                });
+        }
+
+        function enableStart(){
+            document.getElementById("start-button").disabled = false;
+        }
+
+        function disableStart(){
+            document.getElementById("start-button").disabled = true;
+        }
+
+        function getVideo(){
+            fetch("/songVideoTranslation/videoIdForSong?songName=" + document.getElementById("song-name").value)
+                .then(response => response.text())
+                .then(function(data){
+                    document.getElementById("video-frame").src = data;
+                });
+        }
+
+        function toggleTranslation(){
+            let translateCol = document.getElementById("translate-col");
+            let lyricsCol = document.getElementById("lyrics-col");
+            let transliterateCol = document.getElementById("transliterate-col");
+            let videoCol = document.getElementById("video-col");
+            let textCol = document.getElementById("text-col");
+            videoCol.classList.toggle('col-4');
+            videoCol.classList.toggle('col-3');
+            textCol.classList.toggle('col-8');
+            textCol.classList.toggle('col-9');
+            lyricsCol.classList.toggle('col-4');
+            lyricsCol.classList.toggle('col-6');
+            transliterateCol.classList.toggle('col-6');
+            transliterateCol.classList.toggle('col-4');
+            if(translateCol.style.display == 'none'){
+                translateCol.style.display = '';
+            }
+            else{
+                translateCol.style.display = 'none';
+            }
+        }
+
+        function autocompleteSong(){
+            let songInput = document.getElementById("song-name").value;
+            let options = '';
+            songList.forEach(songName =>{
+                if(songName === songInput){
+                    document.getElementById("songs").innerHTML = '';
+                    return;
+                }
+               if(songName.toLowerCase().startsWith(songInput.toLowerCase())){
+                   options += '<option value="' + songName + '" />';
+               }
+
+            });
+            document.getElementById("songs").innerHTML = options;
+        }
+    </script>
+
+    <style>
+
+
+    </style>
+</head>
+<!--authenticate().then(loadClient).then(getAllSongs)-->
+<body onload="getAllSongs()">
+<div class="container-fluid">
+    <div class="center banner">
+        <nav class="navbar navbar-light bg-dark center">
+            <div class="navbar-brand text-white" style="width: 100%">Coders Club - Kannada Film Songs, Lyrics, Translation, Transliteration</div>
+        </nav>
+    </div>
+
+    <div class="content">
+        <div class="input">
+            <div class="row justify-content-between">
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col center">
+                            <label for="song-name">Song: </label>
+                            <!--                        <input id="song-name" list="songs" class="options" placeholder="Select a song"/>-->
+                            <!--                        <datalist id="songs">-->
+
+                            <!--                        </datalist>-->
+                            <input id="song-name" class="options" list="songs" placeholder="Select a song" onkeyup="autocompleteSong()"/>
+                            <datalist id="songs">-->
+
+                            </datalist>
+                        </div>
+                        <div class="col center">
+                            <label for="target">Target Language: </label>
+                            <select name="" id="target" class="options">
+                                <option value="english" selected>English</option>
+                                <option value="kannada" disabled>Kannada</option>
+                                <option value="hindi" disabled>Hindi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-2 center align-self-center">
+                    <input type="checkbox" id="translate-check" checked class="checkbox" onchange="toggleTranslation()"/>
+                    <label for="translate-check">View Translation</label>
+                </div>
+                <div class="col-2">
+                    <div class="center">
+                        <button type="button" class="btn btn-primary start-button" id="start-button" onclick="afterSongSelect()">Start</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <hr class="my-1">
+        <div id="video-lyrics"class="row video-lyrics " hidden>
+            <div class="col-3" id="video-col">
+                <iframe id="video-frame" allowfullscreen style="border: 1px solid black" src="default.html">
+
+                </iframe>
+                <div class="song-details" title="Under construction">
+                    <div class="detail">
+                        <label>Movie</label>
+                    </div>
+                    <div class="detail">
+                        <label>Year of Release</label>
+                    </div>
+                    <div class="detail">
+                        <label>Singer</label>
+                    </div>
+                    <div class="detail">
+                        <label>Writer</label>
+                    </div>
+                    <div class="detail">
+                        <label>Music Director</label>
+                    </div>
+                    <div class="detail">
+                        <label>Cast</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-9 smaller-font" id="text-col">
+                <div class="row">
+                    <div class="col-4" id="lyrics-col">
+                        <div class="text-area-title center">Lyrics</div>
+                        <textarea readonly class="text" id="lyrics"></textarea>
+                    </div>
+
+                    <div class="col-4" id="translate-col">
+                        <div class="text-area-title center">Translation</div>
+                        <textarea readonly class="text" id="translation"></textarea>
+                    </div>
+                    <div class="col-4" id="transliterate-col">
+                        <div class="text-area-title center">Transliteration</div>
+                        <textarea readonly class="text" id="transliteration"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

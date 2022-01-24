@@ -1,0 +1,44 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+mvnw
+mvnw.cmd
+src/test
+.mvn
+out
+src/main/java/org/rakshith/songvideowithtranslation/Helper.java
+src/main/java/org/rakshith/songvideowithtranslation/StructureOrganizer.java
+src/main/java/org/rakshith/songvideowithtranslation/service/NewSongsTranslationTransliteration.java
+src/main/resources/application.properties
+
